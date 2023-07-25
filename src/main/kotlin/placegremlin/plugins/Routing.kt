@@ -12,11 +12,18 @@ import org.imgscalr.Scalr.Method.QUALITY
 import org.imgscalr.Scalr.Mode.FIT_EXACT
 import java.awt.image.BufferedImage
 import java.io.File
+import java.net.URI
 import javax.imageio.ImageIO
 
 fun Application.configureRouting() {
     install(AutoHeadResponse)
-    val imagesUri = checkNotNull(this::class.java.classLoader.getResource("gremlins")?.toURI())
+    val imagePath = System.getenv("IMAGE_PATH")
+    val imagesUri = if (imagePath.isNullOrBlank()) {
+        checkNotNull(this::class.java.classLoader.getResource("gremlins")?.toURI())
+    } else {
+        URI.create(imagePath)
+    }
+
     routing {
         get("/") {
             call.respondText("Load images with https://placegreml.in/{width}/{height}/image.jpg\nExample: https://placegreml.in/200/200/image.jpg")
